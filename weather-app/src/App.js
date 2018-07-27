@@ -7,10 +7,17 @@ class App extends Component {
     constructor(props){
         super(props);
         this.state = {
-            url: `http://api.openweathermap.org/data/2.5/forecast?q=london%2Cus&APPID=${api.key}`
+            url: `http://api.openweathermap.org/data/2.5/forecast?q=london%2Cus&APPID=${api.key}`,
+            data: [],
+            pictures: ['https://cdn3.iconfinder.com/data/icons/bebreezee-weather-symbols/690/icon-weather-sunrainheavy-512.png','https://cdn4.iconfinder.com/data/icons/wthr-color/32/partly-cloudy-day-512.png','https://hanslodge.com/images2/sky-clipart-clear-weather/sunny-weather-icon-13.jpg','https://cdn3.iconfinder.com/data/icons/weather-16/256/Clear_Night-512.png']
         }
         
     }
+    
+    randomValue(items){
+        return items[Math.floor(Math.random() * items.length)];
+    }
+    
     
     getData = () => {
         let url = this.state.url;
@@ -21,17 +28,23 @@ class App extends Component {
             country: data.city.country,
             population: data.city.population,
             time: `${(new Date).getMonth()} ${(new Date).getDate()}, ${(new Date).getHours()}):${(new Date).getMinutes()} `,
-            
+            tempF: Math.floor(Math.random(70 - 30) * 70 + 1),
+            tempC: Math.floor(Math.random() *40 + 1)
         }));
         
     }
     
     componentDidMount(){
         this.getData();
+        console.log(this.state.data)
     }
         
         
   render() {
+      styleImg={
+          width: '30px',
+          height:'30px'
+      }
       console.log(this.state.url);
     return (
       <div className="App">
@@ -42,7 +55,6 @@ class App extends Component {
                         <div className="d-inline-block">
                             <h3>{this.state.location}, {this.state.country}</h3>
                             <p>{this.state.time}</p>
-                            <p>{this.state.time}</p>
                         </div>
                         <div className="d-inline-block btn-group btn-group-sm" data-toggle="buttons">
                             <label id="F" className="btn btn-primary active" aria-pressed="true">
@@ -50,17 +62,17 @@ class App extends Component {
                             </label>
                         <label id="C" className="btn btn-primary" aria-pressed="true">
                                 <input type="radio" name="options" />&deg; C
-                            
+                                
                             </label>
                         </div>
                     </div>
                     <div className="row mt-2">
                         <div className="col-4 col-md-3">
-                            <img className="img-fluid" alt="Weather icon" src=""/>
+                            <img className="img-fluid" alt="Weather icon" src={this.randomValue(this.state.pictures)}/>
                         </div>
                         <div className="col-4 col-md-4">
                             <h1 className="big-font">
-                                69
+                                    {data.tempF}
                                 <span className="units">&deg;F</span>
                             </h1>
                         </div>
