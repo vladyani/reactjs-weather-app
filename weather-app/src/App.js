@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import api from './api.json';
 
@@ -14,8 +13,17 @@ class App extends Component {
         
     }
     
-    randomValue(items){
+    randomValue = (items) =>{
         return items[Math.floor(Math.random() * items.length)];
+    }
+    
+    randomNumber = (num) => {
+        return Math.floor(Math.random() * num);
+    }
+    
+    showDate = () => {
+         const d = new Date();
+        return ((d.getDate() < 10)?"0":"") + d.getDate() +"-"+(((d.getMonth()+1) < 10)?"0":"") + (d.getMonth()+1) +"-"+ d.getFullYear() + " " + ((d.getHours() < 10)?"0":"") + d.getHours() +":"+ ((d.getMinutes() < 10)?"0":"") + d.getMinutes() +":"+ ((d.getSeconds() < 10)?"0":"") + d.getSeconds();
     }
     
     
@@ -27,8 +35,8 @@ class App extends Component {
             location: data.city.name,
             country: data.city.country,
             population: data.city.population,
-            time: `${(new Date).getMonth()} ${(new Date).getDate()}, ${(new Date).getHours()}):${(new Date).getMinutes()} `,
-            tempF: Math.floor(Math.random(70 - 30) * 70 + 1),
+            time: this.showDate(),
+            tempF: Math.floor(Math.random() * 70 + 1),
             tempC: Math.floor(Math.random() *40 + 1)
         }));
         
@@ -41,9 +49,9 @@ class App extends Component {
         
         
   render() {
-      styleImg={
-          width: '30px',
-          height:'30px'
+      const styleImg={
+          width: '50px',
+          height:'50px'
       }
       console.log(this.state.url);
     return (
@@ -68,11 +76,11 @@ class App extends Component {
                     </div>
                     <div className="row mt-2">
                         <div className="col-4 col-md-3">
-                            <img className="img-fluid" alt="Weather icon" src={this.randomValue(this.state.pictures)}/>
+                            <img className="img-fluid" alt="Weather icon" style={styleImg} src={this.randomValue(this.state.pictures)}/>
                         </div>
                         <div className="col-4 col-md-4">
                             <h1 className="big-font">
-                                    {data.tempF}
+                                    {this.state.tempF}
                                 <span className="units">&deg;F</span>
                             </h1>
                         </div>
