@@ -11,15 +11,16 @@ class App extends Component {
             pictures: [
                 'https://cdn3.iconfinder.com/data/icons/bebreezee-weather-symbols/690/icon-weather-sunrainheavy-512.png','https://cdn4.iconfinder.com/data/icons/wthr-color/32/partly-cloudy-day-512.png','https://hanslodge.com/images2/sky-clipart-clear-weather/sunny-weather-icon-13.jpg','https://cdn3.iconfinder.com/data/icons/weather-16/256/Clear_Night-512.png'
             ],
-            inputValue: ''
+            inputValue: '',
+            unitValue: 'F'
         }
         
     }
     
-    randomValue = (items) =>{
-        return items[Math.floor(Math.random() * items.length)];
-    }
-    
+//      randomValue = (items) =>{
+//        return items[Math.floor(Math.random() * items.length)];
+//    }
+//  
     randomNumber = (num) => {
         return Math.floor(Math.random() * num);
     }
@@ -40,28 +41,60 @@ class App extends Component {
             population: data.city.population,
             time: this.showDate(),
             tempF: Math.floor(Math.random() * 70 + 1),
-            tempC: Math.floor(Math.random() *40 + 1)
-        }));
+            tempC: Math.floor(Math.random() *40 + 1),
+            humidity: this.randomNumber(100) + '%',
+            wind: this.randomNumber(400),
+            precipitation: this.randomNumber(100)
+        })).catch( error => {
+            this.setState({
+                errorMessage: 'Please, enter a valid city.'
+            });
+        })
     }
     
+    handleChange = (e) => {
+        this.setState({
+            inputValue: e.target.value
+        });
+    }
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        this.setState({
+           url: `http://api.openweathermap.org/data/2.5/forecast?q=${this.state.inputValue}%2Cus&APPID=${api.key}`,
+            
+        }, () => {
+            this.getData();
+        });
+       
+        let img = document.querySelector('img');
+        img.setAttribute('src',this.state.pictures[Math.floor(Math.random() * this.state.pictures.length)]);
+    }
+    
+    handleClick = (e) => {
+        this.setState({
+            unitValue: e.target.id
+        });
+    }
         
         
     componentDidMount(){
         this.getData();
-        navigator.geolocation.getCurrentPosition(function(position){
-            this.setState({
-               url: `http://api.openweathermap.org/data/2.5/forecast?q=${position.coords.latitude},${position.coords.longitude}%2Cus&APPID=${api.key}`,                                
-            }, () => {
-                this.getData();                                       
-            });
-        });
+//        navigator.geolocation.getCurrentPosition(function(position){
+//            this.setState({
+//               url: `http://api.openweathermap.org/data/2.5/forecast?q=${position.coords.latitude},${position.coords.longitude}%2Cus&APPID=${api.key}`,                                
+//            }, () => {
+//                this.getData();                                       
+//            });
+//        });
     }
+
+
   render() {
       const styleImg={
           width: '50px',
           height:'50px'
       }
-      console.log(this.state.url);
     return (
       <div className="App">
         <div className="container my-5">
@@ -73,24 +106,32 @@ class App extends Component {
                             <p>{this.state.time}</p>
                         </div>
                         <div className="d-inline-block btn-group btn-group-sm" data-toggle="buttons">
-                            <label id="F" className="btn btn-primary active" aria-pressed="true">
-                                <input type="radio" name="options" checked/>&deg; F
+                            <label id="F" className="btn btn-primary active"  
+                            onClick={this.handleClick}>
+                                <input type="radio" name="options"/>&deg; F
                             </label>
-                        <label id="C" className="btn btn-primary" aria-pressed="true">
-                                <input type="radio" name="options" />&deg; C
-                                
+                        <label id="C" className="btn btn-primary " 
+                        onClick={this.handleClick}>
+                                <input type="radio" name="options" /> &deg; C
                             </label>
                         </div>
                     </div>
                     <div className="row mt-2">
                         <div className="col-4 col-md-3">
-                            <img className="img-fluid" alt="Weather icon" style={styleImg} src={this.randomValue(this.state.pictures)}/>
+                            <img className="img-fluid" alt="Weather icon" style={styleImg} src='https://cdn3.iconfinder.com/data/icons/weather-icons-1/64/Sun_Behind_Cloud-512.png'/>
                         </div>
                         <div className="col-4 col-md-4">
-                            <h1 className="big-font">
+                            {   this.state.unitValue === 'F' ?
+                                 <h1 className="big-font">
                                     {this.state.tempF}
                                 <span className="units">&deg;F</span>
-                            </h1>
+                                </h1>
+                                :
+                                <h1 className="big-font">
+                                    {this.state.tempC}
+                                <span className="units">&deg;C</span>
+                                </h1>
+                            }
                         </div>
                         <div className="col-4 col-md-5">
                             <div className="small-font">
@@ -98,13 +139,13 @@ class App extends Component {
                                     Population: <b>{this.state.population}</b>
                                 </p>
                                 <p>
-                                    Humidity: <b>96%</b>
+                                    Humidity: <b>{this.state.humidity}</b>
                                 </p>
                                 <p>
-                                    Wind: <b>0 mph 197&deg;</b>
+                                    Wind: <b>{this.state.wind} mph &deg;</b>
                                 </p>
                                 <p>
-                                    Precipitation: <b>0 mm</b>
+                                    Precipitation: <b>{this.state.precipitation} mm</b>
                                 </p>
                             </div>
                         </div>
@@ -121,7 +162,9 @@ class App extends Component {
                             Submit
                         </button>
                     </form>
-                    <p className="text-danger text-center mt-2"></p>
+                    <p className="text-danger text-center mt-2">
+                        {this.state.errorMessage}
+                    </p>
                 </div>
             </div>
         </div>
