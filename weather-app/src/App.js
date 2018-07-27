@@ -8,7 +8,10 @@ class App extends Component {
         this.state = {
             url: `http://api.openweathermap.org/data/2.5/forecast?q=london%2Cus&APPID=${api.key}`,
             data: [],
-            pictures: ['https://cdn3.iconfinder.com/data/icons/bebreezee-weather-symbols/690/icon-weather-sunrainheavy-512.png','https://cdn4.iconfinder.com/data/icons/wthr-color/32/partly-cloudy-day-512.png','https://hanslodge.com/images2/sky-clipart-clear-weather/sunny-weather-icon-13.jpg','https://cdn3.iconfinder.com/data/icons/weather-16/256/Clear_Night-512.png']
+            pictures: [
+                'https://cdn3.iconfinder.com/data/icons/bebreezee-weather-symbols/690/icon-weather-sunrainheavy-512.png','https://cdn4.iconfinder.com/data/icons/wthr-color/32/partly-cloudy-day-512.png','https://hanslodge.com/images2/sky-clipart-clear-weather/sunny-weather-icon-13.jpg','https://cdn3.iconfinder.com/data/icons/weather-16/256/Clear_Night-512.png'
+            ],
+            inputValue: ''
         }
         
     }
@@ -39,15 +42,20 @@ class App extends Component {
             tempF: Math.floor(Math.random() * 70 + 1),
             tempC: Math.floor(Math.random() *40 + 1)
         }));
-        
     }
     
+        
+        
     componentDidMount(){
         this.getData();
-        console.log(this.state.data)
+        navigator.geolocation.getCurrentPosition(function(position){
+            this.setState({
+               url: `http://api.openweathermap.org/data/2.5/forecast?q=${position.coords.latitude},${position.coords.longitude}%2Cus&APPID=${api.key}`,                                
+            }, () => {
+                this.getData();                                       
+            });
+        });
     }
-        
-        
   render() {
       const styleImg={
           width: '50px',
@@ -101,8 +109,14 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
-                    <form className="form-inline mt-4 justify-content-around">
-                        <input type="text" value="Wroclaw" className="form-control mb-4 mb-sm-0" placeholder="Enter City, please"/>
+                    <form className="form-inline mt-4 justify-content-around" 
+                    onSubmit={this.handleSubmit}>
+                        <input type="text" 
+                        value="Wroclaw" 
+                        className="form-control mb-4 mb-sm-0" 
+                        placeholder="Enter City, please"
+                        value={this.state.inputValue}
+                        onChange={this.handleChange}/>
                         <button type="submit" className="btn btn-primary">
                             Submit
                         </button>
